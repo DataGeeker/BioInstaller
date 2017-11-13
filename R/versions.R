@@ -35,12 +35,12 @@ github2versions <- function(github.url) {
 
 use.github.response <- function(config) {
   flag1 <- (!is.null(config$github_url)) && is.null(config$version_fixed)
-  flag2 <- (!is.null(config$source_url)) && str_detect(config$source_url, fixed("github.com/samtools"))
+  flag2 <- (!is.null(config$source_url)) && !is.null(config$use_github_versions)
   return(flag1 || flag2)
 }
 
 nongithub2versions <- function(name) {
-  script <- system.file("extdata", "parse_version.R", package = "BioInstaller")
+  script <- system.file("extdata", "scripts/parse_version.R", package = "BioInstaller")
   source(script)
   text <- sprintf("get.%s.versions()", name)
   tryCatch(eval(parse(text = text)), error = function(e) {

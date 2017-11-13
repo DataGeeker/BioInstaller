@@ -151,6 +151,10 @@ extract.file <- function(file, destdir, decompress = TRUE) {
 drop_redundance_dir <- function(destdir) {
   files.parent <- list.files(destdir)
   if (length(files.parent) == 1) {
+    dirs.parent <- list.dirs(destdir)
+    if (length(dirs.parent) == 1) {
+      return(TRUE)
+    }
     file.rename(sprintf("%s/%s", destdir, files.parent), sprintf("%s/tmp00", 
       destdir))
     unlink(sprintf("%s/%s", destdir, files.parent), recursive = TRUE)
@@ -183,8 +187,8 @@ download.file.custom <- function(url = "", destfile = "", is.dir = FALSE, showWa
     for (i in filenames) {
       fn <- sprintf("%s/%s", destfile, i)
       tryCatch({
-        status.tmp <- download.file(url = sprintf("%s/%s", url, i), destfile = fn, 
-          ...)
+        url.encode <- URLencode(sprintf("%s/%s", url, i))
+        status.tmp <- download.file(url = url.encode, destfile = fn, ...)
         status <- c(status.tmp, status)
       }, error = function(e) {
         if (showWarnings) {
@@ -200,7 +204,8 @@ download.file.custom <- function(url = "", destfile = "", is.dir = FALSE, showWa
       status <- 0
     }
   } else {
-    status <- download.file(url = url, destfile = destfile, ...)
+    url.encode <- URLencode(url)
+    status <- download.file(url = url.encode, destfile = destfile, ...)
   }
   return(status)
 }

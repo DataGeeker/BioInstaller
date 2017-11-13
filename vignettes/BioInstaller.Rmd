@@ -45,8 +45,8 @@ What's more, BioInstaller provides a different way to download and install your 
 ```{r}
 library(BioInstaller)
 
-# Show all avaliable softwares/dependece in default inst/extdata/github.toml 
-# and inst/extdata/nongithub.toml
+# Show all avaliable softwares/dependece in default inst/extdata/config/github/github.toml 
+# and inst/extdata/config/nongithub/nongithub.toml
 install.bioinfo(show.all.names = TRUE)
 
 # Fetching versions of softwares
@@ -117,12 +117,57 @@ download.dir <- sprintf('%s/craw_all_versions', tempdir())
 craw.all.versions('demo', download.dir = download.dir)
 ```
 
-## Download ANNOVAR databases
+## Get meta information of softwares and databases
 
 ```{r}
-download.dir <- sprintf('%s/ANNOVAR', tempdir())
-config.toml <- system.file("extdata", "databases/ANNOVAR.toml", 
+# Get all meta source files
+meta_files <- get.meta.files()
+meta_files
+
+# Get all of meta informaton in BioInstaller
+meta <- get.meta()
+meta
+
+# Examples of get.meta
+db_cfg_meta <- get.meta(value = "cfg_meta", config = 'db')
+db_cfg_meta
+
+db_cfg_meta_parsed <- get.meta(value = 'cfg_meta', config = 'db', read.config.params = list(rcmd.parse = TRUE))
+db_cfg_meta_parsed
+
+db_cfg_meta <- get.meta(config = 'github', value = 'item')
+db_cfg_meta$bwa
+
+# Get databases meta file
+db_meta_file <- get.meta(config = 'db_meta_file')
+db_meta_file
+db_meta_file <- meta_files[["db_meta_file"]]
+db_meta_file
+```
+
+## Download databases
+
+```{r}
+# all databases config 
+db_cfg_meta <- get.meta(config = 'db', value = 'cfg_meta', 
+                        read.config.params=list(rcmd.parse = TRUE))
+cfg_dir <- db_cfg_meta$cfg_dir
+cfg_dir
+avaliable_cfg <- db_cfg_meta$avaliable_cfg
+avaliable_cfg
+sprintf("%s/%s", cfg_dir, avaliable_cfg)
+
+# ANNOVAR
+download.dir <- sprintf('%s/db_annovar', tempdir())
+config.toml <- system.file("extdata", "config/db/db_annovar.toml", 
   package = "BioInstaller")
-install.bioinfo('raw_ucsc_refgene', download.dir = download.dir, 
-  nongithub.cfg = config.toml, extra.list = list(buildver = "hg19"))
+#install.bioinfo('db_ucsc_refgene', download.dir = download.dir, 
+#  nongithub.cfg = config.toml, extra.list = list(buildver = "hg19"))
+
+# db_main
+download.dir <- sprintf('%s/db_main', tempdir())
+config.toml <- system.file("extdata", "config/db/db_main.toml", 
+  package = "BioInstaller")
+install.bioinfo('db_diseaseenhancer', download.dir = download.dir, 
+  nongithub.cfg = config.toml)
 ```
